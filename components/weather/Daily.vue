@@ -1,58 +1,48 @@
+<script setup lang="ts">
+const { useCurrentLocation } = useLocation();
+const { getForecast, getConditionsIcon } = useWeather();
+const currentLocation: Ref<any | null> = useCurrentLocation();
+const dailyForecast: Ref<WeatherObject[] | undefined> = ref();
+
+// Watch for current location and update weather if it changes.
+watch(currentLocation, async () => {
+  if (currentLocation.value) {
+    dailyForecast.value = (await getForecast("daily")) as WeatherObject[];
+  }
+});
+
+/**
+ * Handle icon name selection based on conditions.
+ */
+const handleConditionsIcon = (weatherData: WeatherObject) => {
+  if (weatherData) {
+    return getConditionsIcon(weatherData.isDay, weatherData.weatherCode);
+  }
+
+  return "";
+};
+</script>
+
 <template>
-  <div class="flex flex-col gap-4">
-    <h2 class="text-2xl font-bold">Daily</h2>
-    <div class="flex flex-col overflow-x-auto shadow-xl">
-      <UiGlassContainer class="grid min-w-max flex-1 grid-cols-7">
-        <WeatherCard
-          class="border-white border-opacity-5 even:border-x"
-          date-time-string="25 Oct 2024"
-          icon="sun"
-          weather="Sunny"
-          :temperature="21"
-        />
-        <WeatherCard
-          class="border-white border-opacity-5 even:border-x"
-          date-time-string="26 Oct 2024"
-          icon="cloudSun"
-          weather="Mostly sunny"
-          :temperature="20"
-        />
-        <WeatherCard
-          class="border-white border-opacity-5 even:border-x"
-          date-time-string="27 Oct 2024"
-          icon="clouds"
-          weather="Cloudy"
-          :temperature="18"
-        />
-        <WeatherCard
-          class="border-white border-opacity-5 even:border-x"
-          date-time-string="28 Oct 2024"
-          icon="cloudRain"
-          weather="Rain"
-          :temperature="15"
-        />
-        <WeatherCard
-          class="border-white border-opacity-5 even:border-x"
-          date-time-string="29 Oct 2024"
-          icon="cloudBolt"
-          weather="Thunder"
-          :temperature="25"
-        />
-        <WeatherCard
-          class="border-white border-opacity-5 even:border-x"
-          date-time-string="30 Oct 2024"
-          icon="cloudStorm"
-          weather="Thunderstorm"
-          :temperature="24"
-        />
-        <WeatherCard
-          class="border-white border-opacity-5 even:border-x"
-          date-time-string="31 Oct 2024"
-          icon="cloudSnow"
-          weather="Snow"
-          :temperature="-21"
-        />
-      </UiGlassContainer>
+  <transition name="fade" appear>
+    <div class="flex h-full flex-col gap-4">
+      <h2 class="text-2xl font-bold">Daily</h2>
+      <div class="flex h-full flex-col overflow-x-auto shadow-xl">
+        <UiGlassContainer class="grid min-w-max flex-1 grid-cols-7">
+          <template v-for="(weatherData, index) in dailyForecast" :key="index">
+            <transition name="fade" appear>
+              <WeatherCard
+                class="border-white border-opacity-5 last:!border-r-0 even:border-x"
+                :class="`delay-${index + 1 * 300}`"
+                :date-time-string="weatherData.dateTimeString"
+                :icon="handleConditionsIcon(weatherData)"
+                :weather="weatherData.weatherCodeString"
+                :temperature="weatherData.temperature"
+              />
+            </transition>
+          </template>
+        </UiGlassContainer>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>

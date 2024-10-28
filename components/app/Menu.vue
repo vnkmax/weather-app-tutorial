@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { useCurrentLocation } = useLocation();
+const currentLocation: Ref<LocationObject | null> = useCurrentLocation();
 const showMenu: Ref<boolean> = ref(false);
 </script>
 
@@ -19,16 +21,19 @@ const showMenu: Ref<boolean> = ref(false);
         class="absolute right-0 top-full mt-4 flex w-full max-w-md flex-col gap-8 backdrop-blur-2xl"
       >
         <!-- Current Location -->
-        <div class="flex flex-col gap-2 tracking-wide">
+        <div
+          v-show="currentLocation?.id"
+          class="flex flex-col gap-2 tracking-wide"
+        >
           <span class="text-lg font-bold">Current Location</span>
           <div class="flex items-center gap-2">
             <Icon class="w-6" icon-name="mapPoint" />
-            <span>Jēkabpils, Jēkabpils novads, Latvia</span>
+            <span>{{ currentLocation?.displayName }}</span>
           </div>
           <div class="ml-8 text-xs font-medium opacity-75">
-            <span>Lat: 56.4958638</span>
+            <span>Latitude: {{ currentLocation?.latitude }}</span>
             &nbsp;
-            <span>Lon: 25.8687747</span>
+            <span>Longitude: {{ currentLocation?.longitude }}</span>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps({
   dateTimeString: {
-    type: String,
+    type: String as PropType<string | undefined>,
     required: true,
   },
   icon: {
@@ -13,7 +13,7 @@ defineProps({
     required: true,
   },
   temperature: {
-    type: Number,
+    type: String as PropType<string | undefined>,
     required: true,
   },
 });
@@ -27,7 +27,7 @@ defineProps({
     <Icon class="h-16" :icon-name="icon" />
     <div class="flex flex-col text-center">
       <span class="font-normal">{{ weather }}</span>
-      <span class="text-xl">{{ temperature }}&deg;C</span>
+      <span class="text-xl">{{ temperature }}</span>
     </div>
   </div>
 </template>
